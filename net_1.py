@@ -126,8 +126,8 @@ if __name__ == "__main__":
     print neural_network.synaptic_weights
 
     # Test the neural network with a new situation.
-    print "Considering new situation [0, 0, 0, 1] -> ?: "
-    print round(neural_network.think(array([0, 0, 0, 1])))
+    print "Considering new situation [0, 1, 1, 1] -> ?: "
+    print round(neural_network.think(array([0, 1, 1, 1])))
 
 
 

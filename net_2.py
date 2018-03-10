@@ -1,16 +1,13 @@
 from numpy import exp, array, random, dot
-import numpy as np
+
 
 class NeuralNetwork():
     def __init__(self):
-        # Seed the random number generator, so it generates the same numbers
-        # every time the program runs.
         random.seed(1)
 
-        # n-1 is no of features
-        # We model a single neuron, with n-1 input connections and 1 output connection.
-        # We assign random weights to a n-1 x 1 matrix, with values in the range -1 to 1
-        # and mean 0.
+        # setting the number of nodes in layer 2 and layer 3
+        # more nodes --> more confidence in predictions (?)
+
         filename = "data.txt"
         noLines = 0
 
@@ -21,26 +18,22 @@ class NeuralNetwork():
             L = l.split(" ")
             n = len(L)
 
-        syn0 = 2 * random.random((n - 1, noLines)) - 1
-        syn1 = 2 * random.random((noLines, 1)) - 1
+        l2 = 5
+        l3 =noLines
 
+        # assign random weights to matrices in network
+        # format is (no. of nodes in previous layer) x (no. of nodes in following layer)
+        self.synaptic_weights1 = 2 * random.random((n-1, l2)) - 1
+        self.synaptic_weights2 = 2 * random.random((l2, l3)) - 1
+        self.synaptic_weights3 = 2 * random.random((l3, 1)) - 1
 
-
-
-    # The Sigmoid function, which describes an S shaped curve.
-    # We pass the weighted sum of the inputs through this function to
-    # normalise them between 0 and 1.
     def __sigmoid(self, x):
         return 1 / (1 + exp(-x))
 
-    # The derivative of the Sigmoid function.
-    # This is the gradient of the Sigmoid curve.
-    # It indicates how confident we are about the existing weight.
+    # derivative of sigmoid function, indicates confidence about existing weight
     def __sigmoid_derivative(self, x):
         return x * (1 - x)
 
-    # We train the neural network through a process of trial and error.
-    # Adjusting the synaptic weights each time.
 
     def setTrainingInput(self):
         # The training set. We have 4 examples, each consisting of 3 input values
@@ -85,52 +78,60 @@ class NeuralNetwork():
         return training_set_outputs
 
 
+    # train neural network, adusting synaptic weights each time
     def train(self, training_set_inputs, training_set_outputs, number_of_training_iterations):
         for iteration in xrange(number_of_training_iterations):
-            # Pass the training set through our neural network (a single neuron).
-            output = self.think(training_set_inputs)
+            # pass training set through our neural network
+            # a2 means the activations fed to second layer
+            a2 = self.__sigmoid(dot(training_set_inputs, self.synaptic_weights1))
+            a3 = self.__sigmoid(dot(a2, self.synaptic_weights2))
+            output = self.__sigmoid(dot(a3, self.synaptic_weights3))
 
-            # Calculate the error (The difference between the desired output
-            # and the predicted output).
-            error = training_set_outputs - output
+            # calculate 'error'
+            del4 = (training_set_outputs - output) * self.__sigmoid_derivative(output)
 
-            # Multiply the error by the input and again by the gradient of the Sigmoid curve.
-            # This means less confident weights are adjusted more.
-            # This means inputs, which are zero, do not cause changes to the weights.
-            adjustment = dot(training_set_inputs.T, error * self.__sigmoid_derivative(output))
+            # find 'errors' in each layer
+            del3 = dot(self.synaptic_weights3, del4.T) * (self.__sigmoid_derivative(a3).T)
+            del2 = dot(self.synaptic_weights2, del3) * (self.__sigmoid_derivative(a2).T)
 
-            # Adjust the weights.
-            self.synaptic_weights += adjustment
+            # get adjustments (gradients) for each layer
+            adjustment3 = dot(a3.T, del4)
+            adjustment2 = dot(a2.T, del3.T)
+            adjustment1 = dot(training_set_inputs.T, del2.T)
 
-    # The neural network thinks.
-    def think(self, inputs):
-        # Pass inputs through our neural network (our single neuron).
-        return self.__sigmoid(dot(inputs, self.synaptic_weights))
+            # adjust weights accordingly
+            self.synaptic_weights1 += adjustment1
+            self.synaptic_weights2 += adjustment2
+            self.synaptic_weights3 += adjustment3
 
-
+    def forward_pass(self, inputs):
+        # pass our inputs through our neural network
+        a2 = self.__sigmoid(dot(inputs, self.synaptic_weights1))
+        a3 = self.__sigmoid(dot(a2, self.synaptic_weights2))
+        output = self.__sigmoid(dot(a3, self.synaptic_weights3))
+        return output
 
 
 if __name__ == "__main__":
-
-    #Intialise a single neuron neural network.
+    # initialise single neuron neural network
     neural_network = NeuralNetwork()
 
-    print "Random starting synaptic weights: "
-    print neural_network.synaptic_weights
-
-    # The training set. We have 4 examples, each consisting of 3 input values
-    # and 1 output value.
-
-    # Train the neural network using a training set.
-    # Do it 10,000 times and make small adjustments each time.
+    print "Random starting synaptic weights (layer 1): "
+    print neural_network.synaptic_weights1
+    print "\nRandom starting synaptic weights (layer 2): "
+    print neural_network.synaptic_weights2
+    print "\nRandom starting synaptic weights (layer 3): "
+    print neural_network.synaptic_weights3
 
     neural_network.train(neural_network.setTrainingInput(), neural_network.setTrainingOutput(), 10000)
 
-    print "New synaptic weights after training: "
-    print neural_network.synaptic_weights
+    print "\nNew synaptic weights (layer 1) after training: "
+    print neural_network.synaptic_weights1
+    print "\nNew synaptic weights (layer 2) after training: "
+    print neural_network.synaptic_weights2
+    print "\nNew synaptic weights (layer 3) after training: "
+    print neural_network.synaptic_weights3
 
-    # Test the neural network with a new situation.
-    print "Considering new situation [0, 0, 0, 1] -> ?: "
-    print round(neural_network.think(array([0, 0, 0, 1])))
-
-
+    # test with new input
+    print "\nConsidering new situation [1,0,0,1] -> ?"
+    print round(neural_network.forward_pass(array([1,0,0,1])))
