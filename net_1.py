@@ -1,5 +1,5 @@
 from numpy import exp, array, random, dot
-
+import numpy as np
 
 class NeuralNetwork():
     def __init__(self):
@@ -7,10 +7,21 @@ class NeuralNetwork():
         # every time the program runs.
         random.seed(1)
 
-        # We model a single neuron, with 3 input connections and 1 output connection.
-        # We assign random weights to a 3 x 1 matrix, with values in the range -1 to 1
+        # n-1 is no of features
+        # We model a single neuron, with n-1 input connections and 1 output connection.
+        # We assign random weights to a n-1 x 1 matrix, with values in the range -1 to 1
         # and mean 0.
-        self.synaptic_weights = 2 * random.random((3, 1)) - 1
+
+
+        filename = "data.txt"
+
+        file = open(filename, "r")
+        for line in file:
+            l = line.strip('\n')
+            L = l.split(" ")
+            n = len(L)
+
+        self.synaptic_weights = 2 * random.random((n-1, 1)) - 1
 
     # The Sigmoid function, which describes an S shaped curve.
     # We pass the weighted sum of the inputs through this function to
@@ -26,6 +37,50 @@ class NeuralNetwork():
 
     # We train the neural network through a process of trial and error.
     # Adjusting the synaptic weights each time.
+
+    def setTrainingInput(self):
+        # The training set. We have 4 examples, each consisting of 3 input values
+        # and 1 output value.
+        filename = "data.txt"
+
+        file = open(filename, "r")
+        training_set_inputs = []
+
+        for line in file:
+            l = line.strip('\n')
+            L = l.split(" ")
+            n = len(L)
+            featureVec = []
+            for i in range(n - 1):
+                featureVec.append(int(L[i]))
+
+            training_set_inputs.append(featureVec)
+        training_set_inputs = array(training_set_inputs)
+
+        return training_set_inputs
+
+
+    def setTrainingOutput(self):
+        # The training set. We have 4 examples, each consisting of 3 input values
+        # and 1 output value.
+        training_set_outputs = []
+        filename = "data.txt"
+
+        file = open(filename, "r")
+
+        outputVec = []
+        for line in file:
+            l = line.strip('\n')
+            L = l.split(" ")
+            n = len(L)
+            outputVec.append(int(L[n - 1]))
+
+
+        training_set_outputs.append(outputVec)
+        training_set_outputs = array(training_set_outputs).T
+        return training_set_outputs
+
+
     def train(self, training_set_inputs, training_set_outputs, number_of_training_iterations):
         for iteration in xrange(number_of_training_iterations):
             # Pass the training set through our neural network (a single neuron).
@@ -49,6 +104,8 @@ class NeuralNetwork():
         return self.__sigmoid(dot(inputs, self.synaptic_weights))
 
 
+
+
 if __name__ == "__main__":
 
     #Intialise a single neuron neural network.
@@ -59,16 +116,17 @@ if __name__ == "__main__":
 
     # The training set. We have 4 examples, each consisting of 3 input values
     # and 1 output value.
-    training_set_inputs = array([[0, 0, 1], [1, 1, 1], [1, 0, 1], [0, 1, 1]])
-    training_set_outputs = array([[0, 1, 1, 0]]).T
 
     # Train the neural network using a training set.
     # Do it 10,000 times and make small adjustments each time.
-    neural_network.train(training_set_inputs, training_set_outputs, 10000)
+
+    neural_network.train(neural_network.setTrainingInput(), neural_network.setTrainingOutput(), 10000)
 
     print "New synaptic weights after training: "
     print neural_network.synaptic_weights
 
     # Test the neural network with a new situation.
-    print "Considering new situation [1, 0, 0] -> ?: "
-    print neural_network.think(array([1, 0, 0]))
+    print "Considering new situation [0, 0, 0, 1] -> ?: "
+    print round(neural_network.think(array([0, 0, 0, 1])))
+
+
