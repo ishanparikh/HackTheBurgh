@@ -130,3 +130,4 @@ if __name__ == "__main__":
     print round(neural_network.think(array([0, 0, 0, 1])))
 
 
+
