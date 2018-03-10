@@ -1,0 +1,16 @@
+created_at (to find time elapsed since post)
+in_reply_to_status_id
+id_str
+entities.hashtags[].text
+in_reply_to_user_id_str
+retweet_count
+favorite_count
+in_reply_to_status_id_str
+in_reply_to_user_id
+user.verified
+user.statuses_count
+user.followers_count
+user.friends_count
+user.id
+user.screen_name (if celebrity name but not verified, then 0 else 1)
+text
