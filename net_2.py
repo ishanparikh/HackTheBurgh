@@ -11,17 +11,21 @@ class NeuralNetwork():
         # We model a single neuron, with n-1 input connections and 1 output connection.
         # We assign random weights to a n-1 x 1 matrix, with values in the range -1 to 1
         # and mean 0.
-
-
         filename = "data.txt"
+        noLines = 0
 
         file = open(filename, "r")
         for line in file:
+            noLines += 1
             l = line.strip('\n')
             L = l.split(" ")
             n = len(L)
 
-        self.synaptic_weights = 2 * random.random((n-1, 1)) - 1
+        syn0 = 2 * random.random((n - 1, noLines)) - 1
+        syn1 = 2 * random.random((noLines, 1)) - 1
+
+
+
 
     # The Sigmoid function, which describes an S shaped curve.
     # We pass the weighted sum of the inputs through this function to
