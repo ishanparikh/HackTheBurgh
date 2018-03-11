@@ -8,7 +8,7 @@ class NeuralNetwork():
         # setting the number of nodes in layer 2 and layer 3
         # more nodes --> more confidence in predictions (?)
 
-        filename = "data.txt"
+        filename = "DMH.txt"
         noLines = 0
 
         file = open(filename, "r")
@@ -18,7 +18,7 @@ class NeuralNetwork():
             L = l.split(" ")
             n = len(L)
 
-        l2 = 5
+        l2 = n
         l3 =noLines
 
         # assign random weights to matrices in network
@@ -133,5 +133,5 @@ if __name__ == "__main__":
     print neural_network.synaptic_weights3
 
     # test with new input
-    print "\nConsidering new situation [1,0,0,1] -> ?"
-    print round(neural_network.forward_pass(array([1,0,0,1])))
+    print "\nConsidering new situation [0 2 0 0.25 0.03529411764705882 0 1] -> ?"
+    print round(neural_network.forward_pass(array([0, 2, 0, 0.25, 0.03529411764705882, 0 ])))

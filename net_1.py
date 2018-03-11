@@ -1,6 +1,8 @@
 from numpy import exp, array, random, dot
 import numpy as np
 
+
+filename= "elonmusk.txt"
 class NeuralNetwork():
     def __init__(self):
         # Seed the random number generator, so it generates the same numbers
@@ -13,7 +15,7 @@ class NeuralNetwork():
         # and mean 0.
 
 
-        filename = "data.txt"
+        #filename = "DMH.txt"
 
         file = open(filename, "r")
         for line in file:
@@ -41,7 +43,7 @@ class NeuralNetwork():
     def setTrainingInput(self):
         # The training set. We have 4 examples, each consisting of 3 input values
         # and 1 output value.
-        filename = "data.txt"
+        #filename = "DMH.txt"
 
         file = open(filename, "r")
         training_set_inputs = []
@@ -52,7 +54,7 @@ class NeuralNetwork():
             n = len(L)
             featureVec = []
             for i in range(n - 1):
-                featureVec.append(int(L[i]))
+                featureVec.append(float(L[i]))
 
             training_set_inputs.append(featureVec)
         training_set_inputs = array(training_set_inputs)
@@ -64,7 +66,7 @@ class NeuralNetwork():
         # The training set. We have 4 examples, each consisting of 3 input values
         # and 1 output value.
         training_set_outputs = []
-        filename = "data.txt"
+        #filename = "DMH.txt"
 
         file = open(filename, "r")
 
@@ -73,7 +75,7 @@ class NeuralNetwork():
             l = line.strip('\n')
             L = l.split(" ")
             n = len(L)
-            outputVec.append(int(L[n - 1]))
+            outputVec.append(float(L[n - 1]))
 
 
         training_set_outputs.append(outputVec)
@@ -126,8 +128,8 @@ if __name__ == "__main__":
     print neural_network.synaptic_weights
 
     # Test the neural network with a new situation.
-    print "Considering new situation [0, 1, 1, 1] -> ?: "
-    print round(neural_network.think(array([0, 1, 1, 1])))
+    print "Considering new situation [1191 0 1 0.49 0.1076923076923077 0 1] -> ?: "
+    print round(neural_network.think(array([1191, 0, 1, 0.49, 0.1076923076923077, 0  ])))
 
 
 
