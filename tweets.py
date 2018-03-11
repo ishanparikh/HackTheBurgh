@@ -4,7 +4,7 @@
 import tweepy #https://github.com/tweepy/tweepy
 import csv
 import botometer
-
+import re
 
 
 #Twitter API credentials
@@ -49,7 +49,7 @@ def get_all_tweets(screen_name):
     while len(new_tweets) > 0:
         print "getting tweets before %s" % (oldest)
         #all subsiquent requests use the max_id param to prevent duplicates
-        new_tweets = api.user_timeline(screen_name = screen_name,count=200,max_id=oldest)
+        new_tweets = api.user_timeline(screen_name = screen_name, count=200, max_id=oldest)
         #save most recent tweets
         alltweets.extend(new_tweets)
         #update the id of the oldest tweet less one
@@ -57,11 +57,15 @@ def get_all_tweets(screen_name):
         print "...%s tweets downloaded so far" % (len(alltweets))
     #transform the tweepy tweets into a 2D array that will populate the csv    
     # outtweets = [[tweet.id_str, tweet.created_at, tweet.text.encode("utf-8"),tweet.retweet_count,tweet.favorite_count] for tweet in alltweets]
-    outtweets = [[tweet.id_str, tweet.created_at, tweet.retweet_count,tweet.favorite_count, verified, botScore] for tweet in alltweets]
+    outtweets = [[tweet.id_str, tweet.created_at, tweet.retweet_count,tweet.favorite_count, verified, botScore,
+                  (float)(sum(1 for c in tweet.text.encode("utf-8") if c.isupper()))/len(tweet.text.encode("utf-8")),
+                  sum(1 for c in tweet.text.encode("utf-8") if c=='!'),
+                  tweet.text.encode("utf-8"), re.findall(r'(https?://\S+)'),
+                  tweet.text.encode("utf-8")] for tweet in alltweets]
     #write the csv    
     with open('%s_tweets.csv' % screen_name, 'wb') as f:
         writer = csv.writer(f)
-        writer.writerow(["id","created_at","retweet_count","favorite_count", "verified", "botScore"])
+        writer.writerow(["id","created_at","retweet_count","favorite_count", "verified", "botScore","Number of caps ratio","Number of Exclamations","Tweet","URLs"])
         writer.writerows(outtweets)
     pass
 
