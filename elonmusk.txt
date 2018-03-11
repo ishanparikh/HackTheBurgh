@@ -1,4 +1,3 @@
-retweet_count favorite_count verified botScore Number of caps ratio Number of Exclamations Fake or Not
 5 106 1 0.49 0.030303030303030304 1 1
 515 4303 1 0.49 0.10638297872340426 0 1
 528 7564 1 0.49 0.125 0 1
