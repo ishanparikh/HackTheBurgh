@@ -57,15 +57,22 @@ def get_all_tweets(screen_name):
         print "...%s tweets downloaded so far" % (len(alltweets))
     #transform the tweepy tweets into a 2D array that will populate the csv    
     # outtweets = [[tweet.id_str, tweet.created_at, tweet.text.encode("utf-8"),tweet.retweet_count,tweet.favorite_count] for tweet in alltweets]
-    outtweets = [[tweet.id_str, tweet.created_at, tweet.retweet_count,tweet.favorite_count, verified, botScore,
+    """outtweets = [[tweet.id_str, tweet.created_at, tweet.retweet_count,tweet.favorite_count, verified, botScore,
                   (float)(sum(1 for c in tweet.text.encode("utf-8") if c.isupper()))/len(tweet.text.encode("utf-8")),
                   sum(1 for c in tweet.text.encode("utf-8") if c=='!'),
-                  tweet.text.encode("utf-8"), re.findall(r'(https?://\S+)'),
-                  tweet.text.encode("utf-8")] for tweet in alltweets]
+                  tweet.text.encode("utf-8"), re.findall(r'(https?://\S+)',
+                  tweet.text.encode("utf-8")), 0] for tweet in alltweets]
+    """
+    outtweets = [[tweet.retweet_count, tweet.favorite_count, verified, botScore,
+                  (float)(sum(1 for c in tweet.text.encode("utf-8") if c.isupper())) / len(tweet.text.encode("utf-8")),
+                  sum(1 for c in tweet.text.encode("utf-8") if c == '!'), 1] for tweet in alltweets]
     #write the csv    
     with open('%s_tweets.csv' % screen_name, 'wb') as f:
         writer = csv.writer(f)
-        writer.writerow(["id","created_at","retweet_count","favorite_count", "verified", "botScore","Number of caps ratio","Number of Exclamations","Tweet","URLs"])
+        #writer.writerow(["id","created_at","retweet_count","favorite_count", "verified", "botScore","Number of caps ratio","Number of Exclamations","Tweet","URLs","Fake or Not"])
+        writer.writerow(
+            ["retweet_count", "favorite_count", "verified", "botScore", "Number of caps ratio",
+             "Number of Exclamations", "Fake or Not"])
         writer.writerows(outtweets)
     pass
 
